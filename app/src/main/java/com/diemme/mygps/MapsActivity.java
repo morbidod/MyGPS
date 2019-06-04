@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Build;
@@ -20,6 +21,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -372,73 +374,9 @@ public class MapsActivity extends AppCompatActivity
         fake8 = new MyItem(Double.parseDouble("42.168"), Double.parseDouble("12.244"), "Paperina", "snippet3");
         fake9 = new MyItem(Double.parseDouble("42.178"), Double.parseDouble("12.245"), "Paperina", "snippet3");
         fake10 = new MyItem(Double.parseDouble("42.188"), Double.parseDouble("12.246"), "Paperina", "snippet3");
-
-/*
-        LatLng mlatlng2=new LatLng(Double.parseDouble("42.17"),Double.parseDouble("12.24"));
-        fake2=new FamilyUser("yyyy","Pluto","",mlatlng2,0);
-
-        LatLng mlatlng3=new LatLng(Double.parseDouble("42.18"),Double.parseDouble("12.25"));
-        fake3=new FamilyUser("zzzz","Paperino","",mlatlng3,0);
-*/
-
-/* removed on 2019-0403
-        //read family users and store key-bitmap
-        mFamilyDBRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (final DataSnapshot familyDataSnaphot:dataSnapshot.getChildren()) {
-                    final String familyUserUid=familyDataSnaphot.getKey();
-                    Log.d(LOG_TAG, "key:" + familyUserUid);
-                    Log.d(LOG_TAG, "value:" + familyDataSnaphot.getValue().toString());
-
-                    if (familyUserUid != currentUser.getUid()){
-                        //it is not the current user - save it
-                        Log.d(LOG_TAG,"Saving user info familylist:"+familyUserUid +" currentUser:"+currentUser.getUid());
-                        listFamilyUid.add(familyDataSnaphot.getKey());
-                        DatabaseReference userRef = mUserDBRef.child(familyUserUid);
-                        userRef.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                if (dataSnapshot.exists()){
-                                    final UserDB familyUser=(UserDB) dataSnapshot.getValue(UserDB.class);
-                                    familyUser.printUser();
-                                    Glide.with(getApplicationContext())
-                                            .load(familyUser.getPhotoURL())
-                                            //.asBitmap()
-                                            // .override(120,120)
-                                            .apply(RequestOptions.circleCropTransform())
-                                            .into(new SimpleTarget<Drawable>() {
-                                                @Override
-                                                public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                                                    BitmapDrawable bitmapDrawable = (BitmapDrawable) resource;
-                                                    mHashMap.put(familyUserUid,bitmapDrawable.getBitmap());
-                                                }
-                                            });
-                                }
-                                else {
-                                    Log.d(LOG_TAG,"No datasnapshot");
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        });
-
-                    } //end if familyUID is current UID
-
-
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-*/
-        getSupportActionBar().setTitle("Where is my Family");
+        ActionBar  actionbar=getSupportActionBar();
+        actionbar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#f18455")));
+        actionbar.setTitle("Dove e' Mamma?");
         // Switch to turn off the position
         Switch switchgps= (Switch) findViewById(R.id.switchgps) ;
 
@@ -592,6 +530,12 @@ public class MapsActivity extends AppCompatActivity
         mClusterManager.setRenderer(mPersonRenderer);
         mGoogleMap.setOnCameraIdleListener(mClusterManager);
         mGoogleMap.setOnMarkerClickListener(mClusterManager);
+        //add fake1 just for debuggining 02 June 2019
+        MarkerOptions mo=new MarkerOptions()
+                          .position(fake1.getPosition())
+                          .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+        mGoogleMap.addMarker(mo);
+
         // Added 2 May 2019
 
         mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter(){

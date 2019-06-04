@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">MyGPS</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="shr_button_next">Next</string>
+    <string name="shr_search_title">Search</string>
+    <string name="shr_filter_title">Filter</string>
+    <string name="shr_family_title">Family</string>
+    <string name="user_logout_title">Log Out</string>
+    <string name="radius_title">Radius</string>
+</resources>

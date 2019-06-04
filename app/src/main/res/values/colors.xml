@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#0A091B</color>
+    <color name="colorPrimaryDark">#070716</color>
+    <color name="colorAccent">#fb6a45</color>
+    <color name="rippleEffectColor">#fc6a45</color>
+    <color name="btnSignInColor">#f18455</color>
+    <color name="btnRegisterColor">#83838C</color>
+    <color name="toolbarIconColor">#83838C</color>
+</resources>
