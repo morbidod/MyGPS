@@ -105,10 +105,41 @@ class UserFragment extends Fragment {
         mProfileStorageReference=mFirebaseStorage.getReference().child("user_photos");
         mFirebaseDB=FirebaseDatabase.getInstance();
 
+        currentUser =FirebaseAuth.getInstance().getCurrentUser();
+        Log.d(LOG_TAG,"Current user:"+currentUser.getDisplayName()+ " Email:"+currentUser.getEmail()+" Phone:"+currentUser.getPhoneNumber()+ " Provider:"+currentUser.getProviderId());
 
         mFamilyDbRef=mFirebaseDB.getReference().child("family");
         mUserDbReference=mFirebaseDB.getReference().child("users");
+        //deal new user: update name and email based on current user
+        Log.d(LOG_TAG,"Retrieving data for:"+currentUser.getUid());
+        mUserDbReference.child(currentUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                UserDB user=(UserDB) dataSnapshot.getValue(UserDB.class);
+                if (user==null){
+                    Log.d(LOG_TAG,"User returned null value");
+                }
+                else{
+                     Log.d(LOG_TAG,"user not null");
+                     user.printUser();
 
+                   //update name if not present
+                   if (user.getName()==null){
+                       mUserDbReference.child(currentUser.getUid()).child("name").setValue(currentUser.getDisplayName());
+                   }
+                   if (user.getEmail()==null){
+                       mUserDbReference.child(currentUser.getUid()).child("email").setValue(currentUser.getEmail());
+                   }
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        // Read Family database and create listFamilyUser containing uid, name, photoURL and lastSeen timestamp - need to change it to make it general
         mFamilyDbRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -150,7 +181,30 @@ class UserFragment extends Fragment {
         });
         currentUser =FirebaseAuth.getInstance().getCurrentUser();
 
+        //check if user is part of the family.
+        // if not part of the family clear the listFamilyUser and add its own
+        if (!isFamilyComponent(currentUser.getUid())){
+            // clear listFamilyUSer
+            listFamilyUser.clear();
+            FamilyUser fu= new FamilyUser(currentUser.getUid(),currentUser.getDisplayName(),currentUser.getPhotoUrl().toString(),0);
+           Log.d(LOG_TAG,"Single user:");
+           fu.printDebug();
+            listFamilyUser.add(fu);
+        }
+
     } //End OnCreate
+
+    private boolean isFamilyComponent(String uid) {
+        boolean resultFamilyComponent = false;
+        int i=0;
+        while (!resultFamilyComponent && i<listFamilyUser.size()){
+            if(listFamilyUser.get(i).getUid().equalsIgnoreCase(uid)){
+                resultFamilyComponent=true;
+            }
+        }
+
+        return resultFamilyComponent;
+    }
 
 
     @Override
@@ -190,6 +244,7 @@ class UserFragment extends Fragment {
                 startActivityForResult(Intent.createChooser(intent,"Complete action using"),RC_PHOTO_PICKER);
             }
         });
+        // MAP Button - start MapsActivity and pass the listFamilyUser
         mapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
